@@ -19,7 +19,7 @@ docker ps
 
 ## 2. Probar
 ```powershell
-curl.exe -X POST http://localhost:5001/api/orders -H "Content-Type: application/json" -d '{\"customerId\":\"C123\",\"items\":[{\"productId\":\"P1\",\"quantity\":2,\"price\":10.5},{\"productId\":\"P2\",\"quantity\":1,\"price\":5.0}]}'
+Invoke-RestMethod -Method Post -Uri http://localhost:5001/api/orders -ContentType "application/json" -Body '{"customerId":"C123","items":[{"productId":"P1","quantity":2,"price":10.5},{"productId":"P2","quantity":1,"price":5.0}]}'
 ```
 Respuesta esperada (201):
 ```json
