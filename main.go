@@ -55,7 +55,10 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /api/orders", func(w http.ResponseWriter, r *http.Request) {
-		createOrder(pool, w, r)
+		start := time.Now()
+		rec := &statusRecorder{ResponseWriter: w, status: http.StatusOK}
+		createOrder(pool, rec, r)
+		log.Printf("%s %s %d %v", r.Method, r.URL.Path, rec.status, time.Since(start))
 	})
 
 	addr := ":" + env("PORT", "5001")
@@ -135,6 +138,17 @@ func totals(items []Item) (float64, int) {
 		count += it.Quantity
 	}
 	return math.Round(total*100) / 100, count
+}
+
+// statusRecorder remembers the response status so it can be logged.
+type statusRecorder struct {
+	http.ResponseWriter
+	status int
+}
+
+func (s *statusRecorder) WriteHeader(code int) {
+	s.status = code
+	s.ResponseWriter.WriteHeader(code)
 }
 
 func httpError(w http.ResponseWriter, status int, msg string) {
